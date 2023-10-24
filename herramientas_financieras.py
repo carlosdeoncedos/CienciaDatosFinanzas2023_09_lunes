@@ -2,7 +2,54 @@ import pandas as pd
 import numpy as np
 import datetime
 
-def precios(accion, fecha1, fecha2, periodo='1d'):
+
+def precios(acciones='^MXX', fecha1=datetime.datetime.today().replace(year=datetime.datetime.today().year - 1), fecha2=datetime.datetime.today(), periodo='1d'):
+    nombres_columnas = {
+        'Date':'fecha',
+        'Adj Close':'cierre_ajustado'
+    }
+    
+    
+    if type(fecha1) != datetime.datetime:
+        fecha1 = datetime.datetime.strptime(fecha1, "%Y-%m-%d").strftime('%s')
+        
+    if type(fecha2) != datetime.datetime:   
+        fecha2 = datetime.datetime.strptime(fecha2, "%Y-%m-%d").strftime('%s')
+    
+    fecha1 = fecha1.strftime('%s')
+    fecha2 = fecha2.strftime('%s')
+    
+    def obtener_datos(accion, fecha1, fecha2, periodo):
+        nombres_columnas = {
+            'Date':'fecha',
+            'Adj Close':'cierre_ajustado'
+        }
+        
+        url_ = f'https://query1.finance.yahoo.com/v7/finance/download/{accion}?period1={fecha1}&period2={fecha2}&interval={periodo}&events=history&includeAdjustedClose=true'
+        
+        df_ = pd.read_csv(url_)
+        df_.rename(columns=nombres_columnas, inplace=True)
+        df_['fecha'] = pd.to_datetime(df_['fecha'])
+        df_.set_index('fecha', inplace=True)
+        df_.drop(columns=['Open', 'High', 'Low',  'Close', 'Volume'], inplace=True)
+        
+        return df_
+    
+    if type(acciones)== str:
+        return obtener_datos(acciones, fecha1, fecha2, periodo)
+    
+    if type(acciones) == list:
+        return pd.concat([obtener_datos(accion, fecha1, fecha2, periodo)['cierre_ajustado'].rename(accion.replace('.mx', '')) for accion in acciones], axis=1)
+    
+
+
+    
+    
+    
+    
+    
+
+def precios2(accion, fecha1, fecha2, periodo='1d'):
     nombres_columnas = {
         'Date':'fecha',
         'Adj Close':'cierre_ajustado'
@@ -48,9 +95,6 @@ def ipc(formato_yf = True):
     df['TICKER'] = df['TICKER'].str.replace(' ', '')
     df['TICKER'] = df['TICKER'].str.lower()
     
-    
-    
-    
     if formato_yf == True:
         df['TICKER'] = df['TICKER'] + '.mx'
         lista = df['TICKER'].to_list()
@@ -59,8 +103,6 @@ def ipc(formato_yf = True):
     else:
         lista = df['TICKER'].to_list()
 
-        
-    
     return lista
     
     
