@@ -11,10 +11,10 @@ def precios(acciones='^MXX', fecha1=datetime.datetime.today().replace(year=datet
     
     
     if type(fecha1) != datetime.datetime:
-        fecha1 = datetime.datetime.strptime(fecha1, "%Y-%m-%d").strftime('%s')
+        fecha1 = datetime.datetime.strptime(fecha1, "%Y-%m-%d")
         
     if type(fecha2) != datetime.datetime:   
-        fecha2 = datetime.datetime.strptime(fecha2, "%Y-%m-%d").strftime('%s')
+        fecha2 = datetime.datetime.strptime(fecha2, "%Y-%m-%d")
     
     fecha1 = fecha1.strftime('%s')
     fecha2 = fecha2.strftime('%s')
