@@ -24,7 +24,48 @@ def precios(accion, fecha1, fecha2, periodo='1d'):
 
 
 
+def ipc(formato_yf = True):
+    """
+    Regresa una lista con todos los componentes
+    del IPC de la BMV.  Los datos los obtenemos
+    de la pag de S&P
+    
+    PARAMETROS
+    --------------
+    formato_yf: Boolean True o False. Default es igual
+    a True
+    """
+    
+    if type(formato_yf) is not bool:
+        raise ValueError('El parámetro debe de ser booleano True/False')
+        
+        
+    url = 'https://www.spglobal.com/spdji/en/idsexport/file.xls?hostIdentifier=48190c8c-42c4-46af-8d1a-0cdx5db894797&selectedModule=Constituents&selectedSubModule=ConstituentsFullList&indexId=92330739&language_id=2&languageId=2'
+    
+    df = pd.read_excel(url, engine='xlrd', skiprows=9)
+    df.dropna(inplace=True)
+    df['TICKER'] = df['TICKER'].str.replace('*', '')
+    df['TICKER'] = df['TICKER'].str.replace(' ', '')
+    df['TICKER'] = df['TICKER'].str.lower()
+    
+    
+    
+    
+    if formato_yf == True:
+        df['TICKER'] = df['TICKER'] + '.mx'
+        lista = df['TICKER'].to_list()
+        lista.insert(0, '^MXX')
+    
+    else:
+        lista = df['TICKER'].to_list()
 
+        
+    
+    return lista
+    
+    
+    
+    
 
 
 """
